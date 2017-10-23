@@ -1,0 +1,44 @@
+package HFT_2;
+option optimize_for = SPEED;
+
+enum SideEnum {
+    BUY = 1;
+    SELL = 2;
+}
+
+// Server -> Client.
+message Event {
+    optional int64 server_timestamp_usec         = 1;
+    optional int32 event_id                      = 2;
+    optional MarketTradeEvent market_trade_event = 3;
+    optional OrderFilledEvent order_filled_event = 4;
+    optional StreamEndEvent stream_end_event     = 5;
+    optional string error                        = 6;
+}
+
+message MarketTradeEvent {
+    required string symbol      = 1; // 'ES' for snp futures, 'VX' for vix futures
+    required int32 trade_price  = 2;
+    required int32 trade_size   = 3;
+    required string trade_side  = 4; // 'A' for Ask-side, 'B' for Bid-side
+}
+
+message OrderFilledEvent {
+    required SideEnum side  = 1;
+    required int32 quantity = 2; // always >0 !
+    required int32 price    = 3;
+    required bool forced    = 4; // false when client initiated order, otherwise true
+}
+
+message StreamEndEvent {
+    required int32 pnl           = 1;
+    required int32 total_trades  = 2;
+    required int32 manual_trades = 3;
+    required int32 forced_trades = 4;
+}
+
+
+// Client -> Server.
+message Signal {
+    optional int32 signal = 1; // >0 for BUY,  <0 for SELL  and  ==0 for NOTHING
+}
