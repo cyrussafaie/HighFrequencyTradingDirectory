@@ -38,7 +38,6 @@ library(MASS)
 m1 <- polr(y~y1+y2+v1+v2, method='probit')
 summary(m1)
 
-
 # now suppose we have such a situation where y1=0, y2=-1, v1=5, v2=3
 # to make predictions we have to construct a dataframe with one observation
 local_df <- data.frame(y1=factor( 0, levels = m1$xlevels$y1), 

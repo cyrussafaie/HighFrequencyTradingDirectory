@@ -117,7 +117,7 @@ markettrade_handler <- function(symbol, trade_price, trade_size, trade_side) {
                                                    decomp_local_df$sim1, decomp_params)
         
         cross_prob <- (probit_cross_prob + decomp_cross_prob ) / 2  # example of voting function
-        if (cross_prob > 0.5)
+        if (cross_prob > 0.7) # changed from 0.5 to 0.7:-275
             signal <- -1
     }
     
