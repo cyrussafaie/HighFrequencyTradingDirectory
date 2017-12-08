@@ -26,7 +26,7 @@ cf <- as.factor(df$pch)  # make factors from snp500 price changes
 
 head(df)
 
-range1 <- 3:length(cf)      # start from 3 since we use lag1 & lag2 predictors
+range1 <- 4:length(cf)      # start from 3 since we use lag1 & lag2 predictors
 
 y  <- cf[range1]            # we predict y - next price change in ticks
 y1 <- cf[range1 - 1]        # lag1 y value as predictor
@@ -34,19 +34,25 @@ y2 <- cf[range1 - 2]        # lag2 y value as predictor
 v1 <- df$size[range1 - 1]   # lag1 trade size as predictor
 v2 <- df$size[range1 - 2]   # lag2 trade size as predictor
 
+y3 <- cf[range1 - 3]        # lag2 y value as predictor
+v3 <- df$size[range1 - 3]   # lag1 trade size as predictor
+vix1=df$vix[range1 - 1]
+vix2=df$vix[range1 - 2]
+
+
 library(MASS)
-m1 <- polr(y~y1+y2+v1+v2, method='probit')
+m1 <- step(polr(y~y1+y2+v1+v2+y3+v3+vix1+vix2, method='probit'),direction = "both")
 summary(m1)
 
 # now suppose we have such a situation where y1=0, y2=-1, v1=5, v2=3
 # to make predictions we have to construct a dataframe with one observation
-local_df <- data.frame(y1=factor( 0, levels = m1$xlevels$y1), 
-                       y2=factor(-1, levels = m1$xlevels$y1), 
-                       v1=5, 
-                       v2=3)
+# local_df <- data.frame(y1=factor( 0, levels = m1$xlevels$y1), 
+#                        y2=factor(-1, levels = m1$xlevels$y1), 
+#                        v1=5, 
+#                        v2=3)
 # to predict next price movement we use general `predict` function
-predicted_prob <- predict(m1, local_df, type = "p")
-predicted_prob
+# predicted_prob <- predict(m1, local_df, type = "p")
+# predicted_prob
 
 # now save the model to use it in client handler
 save(list="m1",file = "hft2_probit_model.Rdata")

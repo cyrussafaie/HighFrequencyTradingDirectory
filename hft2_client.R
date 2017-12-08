@@ -8,7 +8,7 @@ load('hft2_decomp_model.Rdata')  # load decomposition model
 
 # global vars 
 ## !!! barrier should be changed for test assignment !!!
-barrier <- 193900  # ES barrier multiplied by 100
+barrier <- 194500  # ES barrier multiplied by 100
 tick <- 25         # ES tick is multiplied by 100 since prices are also multiplied by 100
 position <- 0      # current position
 # create buffers in advance:
@@ -35,8 +35,12 @@ plot_timestamp <- Sys.time()  # last plotting time, we use it to plot the graph 
 # we use local_df to store values used for predictions
 probit_local_df <- data.frame(y1=factor('0',levels=m1$xlevels$y1),
                        y2=factor('0',levels=m1$xlevels$y2),
+                       y3=factor('0',levels=m1$xlevels$y3),
                        v1=1,
-                       v2=1)
+                       v2=1,
+                       v3=1,
+                       vix1=1,
+                       vix2=1)
 decomp_local_df <- data.frame(aim1 = 0, dim1 = 0, sim1 = 0)
 
 last_es_price <- 0
@@ -98,7 +102,7 @@ markettrade_handler <- function(symbol, trade_price, trade_size, trade_side) {
         
         
         cross_prob <- (probit_cross_prob + decomp_cross_prob ) / 2  # example of voting function
-        if (cross_prob > 0.5)
+        if (cross_prob > 0.4)
             signal <- +1
     }
     else {  # position >= 1, possible cross from right to left
@@ -117,7 +121,7 @@ markettrade_handler <- function(symbol, trade_price, trade_size, trade_side) {
                                                    decomp_local_df$sim1, decomp_params)
         
         cross_prob <- (probit_cross_prob + decomp_cross_prob ) / 2  # example of voting function
-        if (cross_prob > 0.7) # changed from 0.5 to 0.7:-275
+        if (cross_prob > 0.6) # changed from 0.5 to 0.7:-275
             signal <- -1
     }
     
